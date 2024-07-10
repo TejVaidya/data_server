@@ -18,7 +18,7 @@ class Data(models.Model):
     valid_data = models.BooleanField(default=False)
     
 class DataTransaction(models.Model):
-    data = models.JSONField()
+    data = models.ForeignKey(Data, on_delete=models.CASCADE, related_name='data_transaction')
     timestamp = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name = 'data_transaction')
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name = 'data_created_by')
     
