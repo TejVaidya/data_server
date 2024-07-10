@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .models import Data, User
+from .models import Data, User, DataTransaction
 from .serializers import DataSerializer, UserSerializer, RegisterUserSerializer, MyTokenObtainPairSerializer
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -32,11 +32,13 @@ class DataViewSet(viewsets.ModelViewSet):
     @action(default=False, methods = ['post'])
     def write_data(self, request, *args, **kwargs):
         data = request.data
-        Data.objects.create(value = data.get("value"),
+        new_data = Data.objects.create(value = data.get("value"),
                             description = data.get("description"),
                             cost = data.get("cost"),
                             business_unit = data.get("business_unit"),
                             valid_data = False)
+        new_data.save()
+        DataTransaction.objects.create(data=data, created_by = request.user)
         
     @action(default=False, methods = ['post'])
     def approve_data(self, request, *args, **kwargs):
